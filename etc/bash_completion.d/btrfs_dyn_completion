@@ -2,26 +2,36 @@
 
 _btrfs_list()
 {
-	btrfs | /usr/bin/awk '/^\s+btrfs/{gsub(/\]/,"#",$0);gsub(/\[[^#]+#/,"",$0);gsub(/<[^>]+>/,"",$0);gsub(/[^a-z0-9\-\ ].*$/,"",$0);print $0}' | /usr/bin/awk '{print $1" "$2" "$3}' | /bin/egrep  "^${1}" | /bin/sed "s#^${1}##g" | /bin/sed 's# .*$##g' | /usr/bin/sort | /usr/bin/uniq
+    /usr/local/bin/btrfs | /usr/bin/awk '/^\s+btrfs/{gsub(/\]/,"#",$0);gsub(/\[[^#]+#/,"",$0);gsub(/<[^>]+>/,"",$0);gsub(/[^a-z0-9\-\ ].*$/,"",$0);print $0}' | /usr/bin/awk '{print $1" "$2" "$3}' | /bin/egrep  "^${1}" | /bin/sed "s#^${1}##g" | /bin/sed 's# .*$##g' | /usr/bin/sort | /usr/bin/uniq
 }
 _btrfs()
 {
-	local cur
+    local cur
 
-	COMPREPLY=()
-	cur=${COMP_WORDS[COMP_CWORD]}
-	case "$COMP_CWORD" in
-	"1" )
-		local key
-		key="${COMP_WORDS[COMP_CWORD-1]} "
-		COMPREPLY=( $( compgen -W "$(_btrfs_list "${key}")" -- $cur ) );
-		return 0
-		;;
-	"2" )
-		key="${COMP_WORDS[COMP_CWORD-2]} ${COMP_WORDS[COMP_CWORD-1]} "
-		COMPREPLY=( $( compgen -W "$(_btrfs_list "${key}")" -- $cur ) );
-		return 0
-		;;
-	esac
+    COMPREPLY=()
+    cur=${COMP_WORDS[COMP_CWORD]}
+    case "$COMP_CWORD" in
+    "1" )
+        local key
+        key="${COMP_WORDS[COMP_CWORD-1]} "
+        LIST="$(_btrfs_list "${key}")"
+        if [ "${LIST}" == "" ]; then
+            LIST="$(ls -d ${cur}* 2>/dev/null)"
+        fi
+        COMPREPLY=( $( compgen -W "${LIST}" -- $cur ) );
+        return 0
+        ;;
+    "2" )
+        key="${COMP_WORDS[COMP_CWORD-2]} ${COMP_WORDS[COMP_CWORD-1]} "
+        LIST="$(_btrfs_list "${key}")"
+        if [ "${LIST}" == "" ]; then
+            LIST="$(ls -d ${cur}* 2>/dev/null)"
+        fi
+        COMPREPLY=( $( compgen -W "${LIST}" -- $cur ) );
+        return 0
+        ;;
+esac
+    LIST="$(ls -d ${cur}* 2>/dev/null)"
+    COMPREPLY=( $( compgen -W "${LIST}" -- $cur ) );
 }
 complete -F _btrfs $filenames btrfs
