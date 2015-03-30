@@ -2,7 +2,7 @@
 
 _btrfs_list()
 {
-    /usr/local/bin/btrfs | /usr/bin/awk '/^\s+btrfs/{gsub(/\]/,"#",$0);gsub(/\[[^#]+#/,"",$0);gsub(/<[^>]+>/,"",$0);gsub(/[^a-z0-9\-\ ].*$/,"",$0);print $0}' | /usr/bin/awk '{print $1" "$2" "$3}' | /bin/egrep  "^${1}" | /bin/sed "s#^${1}##g" | /bin/sed 's# .*$##g' | /usr/bin/sort | /usr/bin/uniq
+    btrfs help | /usr/bin/awk '/^\s+btrfs/{gsub(/\]/,"#",$0);gsub(/\[[^#]+#/,"",$0);gsub(/<[^>]+>/,"",$0);gsub(/[^a-z0-9\-\ ].*$/,"",$0);print $0}' | /usr/bin/awk '{print $1" "$2" "$3}' | /bin/egrep  "^${1}" | /bin/sed "s#^${1}##g" | /bin/sed 's# .*$##g' | /usr/bin/sort | /usr/bin/uniq
 }
 _btrfs()
 {
